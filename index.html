@@ -6,12 +6,20 @@
 
     <title>Manifesto - Bruce Mau</title>
 
-    <meta name="description" content="" />
-    <meta name="keywords" content="" />
+    <meta name="description" content="A scrollable one-pager that reads and speaks. About design. Manifesto by Bruce Mau, 2007." />
+    <meta name="keywords" content="design, manifesto, bruce, mau, bruce mau, onepager, virtual, digital" />
     <meta name="author" content="L Daniel Swakman, www.ldaniel.eu" />
     <meta charset="utf-8" />
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+    <link rel="manifest" href="/manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#0000ff">
+    <meta name="msapplication-navbutton-color" content="#0000ff">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#0000ff">
+
 
     <link href='https://fonts.googleapis.com/css?family=Work+Sans:500,700' rel='stylesheet' type='text/css'>
     <!-- <link rel="stylesheet" href="style.css" /> -->
@@ -124,11 +132,14 @@
         left: 0;
         width: 100%;
         height: 20vh;
-        background: -webkit-gradient(linear, left top, left 80%, color-stop(0%, transparent), color-stop(100%, rgba(0, 0, 255, 1)));
-        background: -webkit-linear-gradient(top, transparent 0%, rgba(0, 0, 255, 1) 80%);
-        background: -moz-linear-gradient(top, transparent 0%, rgba(0, 0, 255, 1) 80%);
-        background: -ms-linear-gradient(top, transparent 0%, rgba(0, 0, 255, 1) 80%);
-        background: -o-linear-gradient(top, transparent 0%, rgba(0, 0, 255, 1) 80%);
+        background: rgba(0,0,255,0);
+        background: -moz-linear-gradient(top, rgba(0,0,255,0) 0%, rgba(0,0,255,1) 80%, rgba(0,0,255,1) 100%);
+        background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(0,0,255,0)), color-stop(80%, rgba(0,0,255,1)), color-stop(100%, rgba(0,0,255,1)));
+        background: -webkit-linear-gradient(top, rgba(0,0,255,0) 0%, rgba(0,0,255,1) 80%, rgba(0,0,255,1) 100%);
+        background: -o-linear-gradient(top, rgba(0,0,255,0) 0%, rgba(0,0,255,1) 80%, rgba(0,0,255,1) 100%);
+        background: -ms-linear-gradient(top, rgba(0,0,255,0) 0%, rgba(0,0,255,1) 80%, rgba(0,0,255,1) 100%);
+        background: linear-gradient(to bottom, rgba(0,0,255,0) 0%, rgba(0,0,255,1) 80%, rgba(0,0,255,1) 100%);
+        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0000ff', endColorstr='#0000ff', GradientType=0 );
         text-align: center;
         z-index: 2;
       }
@@ -137,13 +148,17 @@
         flex-direction: colums;
         justify-content: space-between;
         align-items: center;
+        padding: 0 20px;
       }
       aside > * {
-        padding: 3vh 20px 0;
+        padding: 3vh 0 0;
       }
       aside div:first-child,
       aside div:last-child {
         width: 140px;
+      }
+      aside div:last-child {
+        text-align: right;
       }
       header {
         bottom: auto;
@@ -167,6 +182,7 @@
         font-family: "Work Sans", Arial, sans-serif;
         cursor: pointer;
         font-size: 1em;
+        white-space: nowrap;
       }
       .button:focus {
         outline: none;
@@ -207,6 +223,34 @@
       .button.isPlaying .pause {
         display: inline-block;
       }
+      .button-transp {
+        background-color: transparent;
+        color: #fff;
+      }
+      .button-large {
+        font-size: 2em;
+      }
+      .isSpinning {
+        -webkit-animation: spinning 1s infinite linear;
+        -moz-animation: spinning 1s infinite linear;
+        animation: spinning 1s infinite linear;
+        -webkit-transform-origin: center 51%;
+        -moz-transform-origin: center 51%;
+        transform-origin: center 51%;
+        text-align: center;
+      }
+      @-webkit-keyframes spinning {
+        from  { -webkit-transform: rotate(0); }
+        to    { -webkit-transform: rotate(360deg); }
+      }
+      @-moz-keyframes spinning {
+        from  { -moz-transform: rotate(0); }
+        to    { -moz-transform: rotate(360deg); }
+      }
+      @keyframes spinning {
+        from  { transform: rotate(0); }
+        to    { transform: rotate(360deg); }
+      }
     </style>
 
     <script>
@@ -223,11 +267,6 @@
           e.preventDefault();
           playpause();
         });
-        $(document).keypress(function(e) {
-          if(e.which == 32) {
-            playpause();
-          }
-        });
         $('#replay').click(function(e) {
           e.preventDefault();
 
@@ -240,6 +279,16 @@
             playpause();
           } });
         });
+        $("#audio").on('canplaythrough', function() {
+          $('#playpause').removeClass('u-hide');
+          $('#loader').addClass('u-hide');
+        });
+        // exception for ios' not handling canplaythrough event
+        var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        if(iOS) {
+          $('#playpause').removeClass('u-hide');
+          $('#loader').addClass('u-hide');
+        }
         $("#audio").on('ended', function() {
           $('#playpause').addClass('u-hide');
           $('#replay').removeClass('u-hide');
@@ -271,11 +320,15 @@
           duration = $("#audio").prop("duration");
           scrollDuration = (1 - (scroll / ($('body').outerHeight() - windowH))) * duration * 1000 + 20000;
 
-          scrollAnimate($('body'), scrollDuration );
+          $("#audio").on('timeupdate', function() {
+            if(!$("#audio").prop("paused")) {
+              scrollAnimate($('body'), scrollDuration );
+            }
+          });
 
         } else {
           $("#audio").trigger('pause');
-          $('body').stop();
+          $('body').stop(true);
         }
       }
 
@@ -309,9 +362,14 @@
 
       // Listeners
       $(window).scroll(function() { scrollActions(); });
-      $(window).resize(function() { scrollActions(); });
       $(document).bind("scrollstart", function() { scrollActions(); });
       $(document).bind("scrollstop", function() { scrollActions(); });
+      $(window).resize(function() { 
+        if(!$('#audio').prop("paused")) {
+          $('body').stop();
+          updateScrollPos();
+        }
+      });
 
     </script>
 
@@ -349,12 +407,13 @@
       </div>
 
       <div>
+        <button id="loader" class="button button-transp button-large isSpinning">↻</button>
         <button id="playpause" class="button button-solid u-hide">
-          <strong class="play">PLAY</strong>
-          <strong class="pause">PAUSE</strong>
+          <strong class="play">PLAY &nbsp;➤</strong>
+          <strong class="pause">PAUSE &nbsp;Ⅱ</strong>
         </button>
-        <button id="replay" class="button button-solid u-hide"><strong>REPLAY</strong></button>
-        <audio id="audio" oncanplaythrough="$('#playpause').removeClass('u-hide');">
+        <button id="replay" class="button button-solid u-hide"><strong>REPLAY ↻</strong></button>
+        <audio id="audio">
           <source src="audio.mp3" type="audio/mpeg">
         </audio>
       </div>
@@ -364,7 +423,7 @@
       </div>
 
     </aside>
-    
+
   </body>
 
 </html>
