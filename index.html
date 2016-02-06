@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+
+<html>
+
+  <head>
+
+    <title>Manifesto - Bruce Mau</title>
+
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
+    <meta name="author" content="L Daniel Swakman, www.ldaniel.eu" />
+    <meta charset="utf-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+    <link href='https://fonts.googleapis.com/css?family=Work+Sans:500,700' rel='stylesheet' type='text/css'>
+    <!-- <link rel="stylesheet" href="style.css" /> -->
+
+    <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-smooth-scroll/1.7.2/jquery.smooth-scroll.min.js"></script>
+    <!-- <script src="js/scripts.js"></script> -->
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+      }
+      .u-hide {
+        display: none !important;
+      }
+      body, html {
+        min-width: 100%;
+        min-height: 100%;
+
+        font-family: "Work Sans", Arial, sans-serif;
+        background-color: #00f;
+        color: #fff;
+
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        -webkit-text-size-adjust: none;
+        font-kerning: normal;
+
+        -webkit-transition: all 0.3s ease;
+        -moz-transition: all 0.3s ease;
+        transition: all 0.3s ease;
+      }
+      ::selection {
+        background-color: #000;
+        color: #fff;
+        opacity: 1;
+      }
+      .wrapper {
+        padding: 7vh 5vw 25vh;
+      }
+      .wrapper p:first-child:before {
+        content: "§";
+        display: block;
+        width: 100%;
+        height: 10vh;
+        text-align: center;
+        -webkit-transform: rotate(90deg) scaleX(0.8);
+        -moz-transform: rotate(90deg) scaleX(0.8);
+        transform: rotate(90deg) scaleX(0.8);
+        opacity: 0.6;
+      }
+      a {
+        text-decoration: none;
+      }
+      p {
+        max-width: 20em;
+        margin: 1em auto;
+
+        font-size: 8vh;
+        line-height: 14vh;
+        font-weight: 500;
+      }
+      p:after {
+        content: "¶";
+        opacity: 0.4;
+      }
+      @media (orientation: portrait) and (max-width: 768px) {
+        p {
+          font-size: 6vh;
+          line-height: 10vh;
+        }
+      }
+
+      #debug {
+        position: fixed;
+        top: 0;
+        right: 0;
+        display: inline-block;
+        padding: 10px;
+        background-color: rgba(0, 0, 0, 0.5);
+        color: #fff;
+        text-align: right;
+        z-index: 3;
+      }
+      header,
+      aside {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 20vh;
+        background: -webkit-gradient(linear, left top, left 80%, color-stop(0%, transparent), color-stop(100%, rgba(0, 0, 255, 1)));
+        background: -webkit-linear-gradient(top, transparent 0%, rgba(0, 0, 255, 1) 80%);
+        background: -moz-linear-gradient(top, transparent 0%, rgba(0, 0, 255, 1) 80%);
+        background: -ms-linear-gradient(top, transparent 0%, rgba(0, 0, 255, 1) 80%);
+        background: -o-linear-gradient(top, transparent 0%, rgba(0, 0, 255, 1) 80%);
+        text-align: center;
+        z-index: 2;
+      }
+      aside {
+        display: flex;
+        flex-direction: colums;
+        justify-content: space-between;
+        align-items: center;
+      }
+      aside > * {
+        padding: 3vh 20px 0;
+      }
+      aside div:first-child,
+      aside div:last-child {
+        width: 140px;
+      }
+      header {
+        bottom: auto;
+        top: 0;
+        height: 12vh;
+        -webkit-transform: rotate(180deg);
+        -moz-transform: rotate(180deg);
+        transform: rotate(180deg);
+      }
+      button {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+      }
+      .button {
+        display: inline-block;
+        padding: 13px 20px;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 5px;
+        font-family: "Work Sans", Arial, sans-serif;
+        cursor: pointer;
+        font-size: 1em;
+      }
+      .button:focus {
+        outline: none;
+      }
+      .button:active {
+        -webkit-transform: translateY(2px);
+        -moz-transform: translateY(2px);
+        transform: translateY(2px);
+        opacity: 0.8;
+      }
+      .button.button-solid {
+        background-color: rgba(255, 255, 255, 0.9);
+        color: #00f;
+      }
+      .button.button-solid:hover {
+        background-color: #fff;
+      }
+      .button.button-outline {
+        border-color: #fff;
+        background: transparent;
+        color: #fff;
+      }
+      .button.button-outline:hover {
+        background: #fff;
+        color: #00f;
+      }
+      .button.button-reveal {
+        background: transparent;
+        color: #fff;
+      }
+      .button.button-reveal:hover {
+        border-color: #fff;
+      }
+      .button .pause,
+      .button.isPlaying .play {
+        display: none;
+      }
+      .button.isPlaying .pause {
+        display: inline-block;
+      }
+    </style>
+
+    <script>
+      $(document).ready(function() {
+
+        $audioLoaded = false;
+
+        $.smoothScroll({ scrollTarget: '#top' });
+
+        scrollActions();
+
+        // Listeners
+        $('#playpause').click(function(e) {
+          e.preventDefault();
+          playpause();
+        });
+        $(document).keypress(function(e) {
+          if(e.which == 32) {
+            playpause();
+          }
+        });
+        $('#replay').click(function(e) {
+          e.preventDefault();
+
+          // reset scroll & audio to start
+          $.smoothScroll({ scrollTarget: '#top' });
+          $("#audio").prop("currentTime",0);
+
+          // reset button states
+          $('#playpause').removeClass('u-hide');
+          $('#replay').addClass('u-hide');
+
+          // start playback
+          playpause();
+        });
+        $('#tweet').click(function(e) {
+          e.preventDefault();
+          $url = $(this).attr('href');
+          window.open($url, '_blank', 'width=600, height=300, menubar=no, top=300, left=450');
+        });
+      });
+
+      // function scroll(element, speed) {
+      //   element.animate({ scrollTop: $(document).height() }, speed,'linear', function() {
+      //     $(this).animate({ scrollTop: 0 }, speed, scroll(element, speed));
+      //     $('#playpause').addClass('u-hide');
+      //     $('#replay').removeClass('u-hide');
+      //   });
+      // }
+
+      function playpause() {
+        // while ($audioLoaded === false) {
+        //   console.log('waiting for audio...');
+        // }
+
+        // button state
+        $('#playpause').toggleClass('isPlaying');
+
+        // audio & scroll actions
+        // if($("#audio").prop("currentTime") == 0) {
+        //   $.smoothScroll({ scrollTarget: '#top' });
+        // }
+        if($('#playpause').hasClass('isPlaying')) {
+          $("#audio").trigger('play');
+          scrollListener = setInterval(updateScrollPos(), 100);
+          // scroll($('body'), 97000);
+        } else {
+          $("#audio").trigger('pause');
+          // $('body').stop();
+          clearInterval(scrollListener);
+        }
+      }
+
+      function audioState(status) {
+        console.log(status);
+        if(status =='canplaythrough') {
+          $('#playpause').removeClass('u-hide');
+        }
+      }
+
+      function scrollActions() {
+        // set debug values
+        scroll = $(window).scrollTop();
+        windowH = $(window).height();
+        duration = $("#audio").prop("duration");
+
+        $('#debug .window-height').html( $('body').outerHeight() - windowH );
+        $('#debug .scrolltop').html( scroll );
+        $('#debug .audio-position').html( $("#audio").prop("currentTime") );
+        $('#debug .audio-duration').html( duration );
+
+        updateAudioPos();
+      }
+
+      function updateAudioPos() {
+
+        scroll = $(window).scrollTop();
+        windowH = $(window).height();
+        duration = $("#audio").prop("duration");
+
+        audioPos = (scroll / ($('body').outerHeight() - windowH)) * duration;
+        var audio = $("#audio")[0];
+        if (audio.readyState >= 4) {
+          $("#audio").prop("currentTime", audioPos);
+        }
+
+      }
+      
+      function updateScrollPos() {
+        console.log('audio is at: ' + $("#audio").prop("currentTime"));
+      }
+
+      // Listeners
+      $(window).scroll(function() { scrollActions(); });
+      $(window).resize(function() { scrollActions(); });
+      $(document).bind("scrollstart", function() { scrollActions(); });
+      $(document).bind("scrollstop", function() { scrollActions(); });
+
+      // //forward the music about 5 seconds
+      // $(".audioDemo").prop("currentTime",$(".audioDemo").prop("currentTime")+5);
+      // //backward the music about 5 seconds
+      // $(".audioDemo").prop("currentTime",$(".audioDemo").prop("currentTime")-5);
+    </script>
+
+  </head>
+
+  <body>
+
+    <header>
+      Bruce Mau
+      MANIFESTO
+    </header>
+
+    <a id="top"></a>
+
+    <div class="wrapper">
+
+      <p>In the far past, designers were charged with designing solely for the physical environment. Buildings, parks, bridges, teapots, toothbrushes, wastebaskets.</p>
+
+      <p>In the recent past and present, designers began to shift towards designing for the virtual environment. Broadcast imagery, digital photographs, websites, information kiosks, clothing in Second Life. They designed for everything around themselves (the physical), and everything around their mind (the virtual).</p> 
+
+      <p>In the next chapter of the future, they will be designing the centre of their very being – their own mind and their own body. They will design their arms to replace the many injuries from typing on their little BlackBerrys or from too much usage of the computer mouse; they will design their eyes so that they can easier see the little type on the tiny screens of their mobile; they will design their brains so that they can better handle a million tasks simultaneously instead of the three or four that they can process today.</p>
+
+      <p>They will have designed everything outside their body and outside their mind, to inside their body and inside their mind. In the end, they will have designed the essence of the meaning of design and life itself.</p>
+
+    </div>
+
+    <aside>
+
+      <div></div>
+
+      <div>
+        <button id="playpause" class="button button-solid u-hide">
+          <strong class="play">PLAY</strong>
+          <strong class="pause">PAUSE</strong>
+        </button>
+        <button id="replay" class="button button-solid u-hide">REPLAY</button>
+        <audio id="audio" oncanplay="audioState('canplay')" oncanplaythrough="audioState('canplaythrough')" onloadeddata="audioState('loadeddata')">
+          <source src="audio.mp3" type="audio/mpeg">
+        </audio>
+      </div>
+
+      <div>
+        <a id="tweet" href="http://twitter.com/share?text=%23BruceMau%20%23design%20%23Manifesto%20by%20@ldanielswakman&url=http://www/ldaniel.eu/mau-manifesto" class="button button-reveal" target="_blank">Tweet</a>
+        <!-- <a href="" class="button button-reveal" target="_blank">Share</a> -->
+      </div>
+
+    </aside>
+
+    <div id="debug">
+      window height: <span class="window-height"></span>px<br />
+      body height: <span class="body-height"></span>px<br />
+      scrolltop: <span class="scrolltop"></span>px<br />
+      audio pos: <span class="audio-position"></span><br />
+      audio duration: <span class="audio-duration"></span>
+    </div>
+
+  </body>
+
+</html>
