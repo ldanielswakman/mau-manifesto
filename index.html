@@ -89,6 +89,22 @@
           line-height: 10vh;
         }
       }
+      .colophon {
+        max-width: 40em;
+        margin: 0 auto;
+        opacity: 1;
+
+        -webkit-transition: all 2s ease;
+        -moz-transition: all 2s ease;
+        transition: all 2s ease;
+      }
+      .colophon.u-invisible {
+        opacity: 0;
+
+        -webkit-transition: all 2s ease;
+        -moz-transition: all 2s ease;
+        transition: all 2s ease;
+      }
 
       #debug {
         position: fixed;
@@ -216,15 +232,18 @@
           e.preventDefault();
 
           // reset scroll & audio to start
-          $.smoothScroll({ scrollTarget: '#top' });
-          $("#audio").prop("currentTime",0);
-
-          // reset button states
-          $('#playpause').removeClass('u-hide');
-          $('#replay').addClass('u-hide');
-
-          // start playback
-          playpause();
+          $.smoothScroll({ scrollTarget: '#top', afterScroll: function() {
+            // reset button states
+            $('#playpause').removeClass('u-hide');
+            $('#replay').addClass('u-hide');
+            // start playback
+            playpause();
+          } });
+        });
+        $("#audio").on('ended', function() {
+          $('#playpause').addClass('u-hide');
+          $('#replay').removeClass('u-hide');
+          $('.wrapper .colophon').removeClass('u-invisible');
         });
         $('#tweet').click(function(e) {
           e.preventDefault();
@@ -233,56 +252,37 @@
         });
       });
 
-      // function scroll(element, speed) {
-      //   element.animate({ scrollTop: $(document).height() }, speed,'linear', function() {
-      //     $(this).animate({ scrollTop: 0 }, speed, scroll(element, speed));
-      //     $('#playpause').addClass('u-hide');
-      //     $('#replay').removeClass('u-hide');
-      //   });
-      // }
+      function scrollAnimate(element, speed) {
+        element.animate({ scrollTop: $(document).height() }, speed,'linear', function() {
+          $(this).animate({ scrollTop: 0 }, speed, scroll(element, speed));
+        });
+      }
 
       function playpause() {
-        // while ($audioLoaded === false) {
-        //   console.log('waiting for audio...');
-        // }
-
         // button state
         $('#playpause').toggleClass('isPlaying');
 
         // audio & scroll actions
-        // if($("#audio").prop("currentTime") == 0) {
-        //   $.smoothScroll({ scrollTarget: '#top' });
-        // }
         if($('#playpause').hasClass('isPlaying')) {
           $("#audio").trigger('play');
-          scrollListener = setInterval(updateScrollPos(), 100);
-          // scroll($('body'), 97000);
+
+          scroll = $(window).scrollTop();
+          windowH = $(window).height();
+          duration = $("#audio").prop("duration");
+          scrollDuration = (1 - (scroll / ($('body').outerHeight() - windowH))) * duration * 1000 + 20000;
+
+          scrollAnimate($('body'), scrollDuration );
+
         } else {
           $("#audio").trigger('pause');
-          // $('body').stop();
-          clearInterval(scrollListener);
-        }
-      }
-
-      function audioState(status) {
-        console.log(status);
-        if(status =='canplaythrough') {
-          $('#playpause').removeClass('u-hide');
+          $('body').stop();
         }
       }
 
       function scrollActions() {
-        // set debug values
-        scroll = $(window).scrollTop();
-        windowH = $(window).height();
-        duration = $("#audio").prop("duration");
-
-        $('#debug .window-height').html( $('body').outerHeight() - windowH );
-        $('#debug .scrolltop').html( scroll );
-        $('#debug .audio-position').html( $("#audio").prop("currentTime") );
-        $('#debug .audio-duration').html( duration );
-
-        updateAudioPos();
+        if($('#audio').prop("paused")) {
+          updateAudioPos();
+        }
       }
 
       function updateAudioPos() {
@@ -300,7 +300,11 @@
       }
       
       function updateScrollPos() {
-        console.log('audio is at: ' + $("#audio").prop("currentTime"));
+        var audio = $("#audio")[0];
+        if (audio.readyState >= 4) {
+          scrollpos = ($("#audio").prop("currentTime") / $("#audio").prop("duration")) * ($('body').outerHeight() - windowH);
+          $(window).scrollTop( scrollpos );
+        }
       }
 
       // Listeners
@@ -309,20 +313,13 @@
       $(document).bind("scrollstart", function() { scrollActions(); });
       $(document).bind("scrollstop", function() { scrollActions(); });
 
-      // //forward the music about 5 seconds
-      // $(".audioDemo").prop("currentTime",$(".audioDemo").prop("currentTime")+5);
-      // //backward the music about 5 seconds
-      // $(".audioDemo").prop("currentTime",$(".audioDemo").prop("currentTime")-5);
     </script>
 
   </head>
 
   <body>
 
-    <header>
-      Bruce Mau
-      MANIFESTO
-    </header>
+    <header><!-- Bruce Mau MANIFESTO --></header>
 
     <a id="top"></a>
 
@@ -336,38 +333,38 @@
 
       <p>They will have designed everything outside their body and outside their mind, to inside their body and inside their mind. In the end, they will have designed the essence of the meaning of design and life itself.</p>
 
+      <div class="colophon u-invisible">
+      — Bruce Mau, 2007<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;<small><i>First published in ICON, issue 404, August 2007</i></small>
+      </div>
+
     </div>
+
+    <a id="bottom"></a>
 
     <aside>
 
-      <div></div>
+      <div>
+        <a href="http://www.ldaniel.eu" class="button button-reveal"><strong>↩</strong></a>
+      </div>
 
       <div>
         <button id="playpause" class="button button-solid u-hide">
           <strong class="play">PLAY</strong>
           <strong class="pause">PAUSE</strong>
         </button>
-        <button id="replay" class="button button-solid u-hide">REPLAY</button>
-        <audio id="audio" oncanplay="audioState('canplay')" oncanplaythrough="audioState('canplaythrough')" onloadeddata="audioState('loadeddata')">
+        <button id="replay" class="button button-solid u-hide"><strong>REPLAY</strong></button>
+        <audio id="audio" oncanplaythrough="$('#playpause').removeClass('u-hide');">
           <source src="audio.mp3" type="audio/mpeg">
         </audio>
       </div>
 
       <div>
         <a id="tweet" href="http://twitter.com/share?text=%23BruceMau%20%23design%20%23Manifesto%20by%20@ldanielswakman&url=http://www/ldaniel.eu/mau-manifesto" class="button button-reveal" target="_blank">Tweet</a>
-        <!-- <a href="" class="button button-reveal" target="_blank">Share</a> -->
       </div>
 
     </aside>
-
-    <div id="debug">
-      window height: <span class="window-height"></span>px<br />
-      body height: <span class="body-height"></span>px<br />
-      scrolltop: <span class="scrolltop"></span>px<br />
-      audio pos: <span class="audio-position"></span><br />
-      audio duration: <span class="audio-duration"></span>
-    </div>
-
+    
   </body>
 
 </html>
