@@ -303,7 +303,7 @@
 
       function scrollAnimate(element, speed) {
         element.animate({ scrollTop: $(document).height() }, speed,'linear', function() {
-          $(this).animate({ scrollTop: 0 }, speed, scroll(element, speed));
+          // $(this).animate({ scrollTop: 0 }, speed, scroll(element, speed));
         });
       }
 
@@ -322,13 +322,13 @@
 
           $("#audio").on('timeupdate', function() {
             if(!$("#audio").prop("paused")) {
-              scrollAnimate($('body'), scrollDuration );
+              scrollAnimate($('body, html'), scrollDuration );
             }
           });
 
         } else {
           $("#audio").trigger('pause');
-          $('body').stop(true);
+          $('body').stop(true, false);
         }
       }
 
@@ -423,6 +423,16 @@
       </div>
 
     </aside>
+
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-9833982-26', 'auto');
+      ga('send', 'pageview');
+    </script>
 
   </body>
 
