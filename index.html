@@ -44,6 +44,19 @@
       .u-hide {
         display: none !important;
       }
+      .u-pinned-bottom {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        z-index: 3;
+      }
+      .u-aligncenter {
+        text-align: center;
+      }
+      .c-dark {
+        color: rgba(0, 0, 0, 0.5);
+      }
       body, html {
         min-width: 100%;
         min-height: 100%;
@@ -67,6 +80,7 @@
         opacity: 1;
       }
       .wrapper {
+        position: relative;
         padding: 7vh 5vw 25vh;
       }
       .wrapper p:first-child:before {
@@ -396,9 +410,15 @@
       <p>They will have designed everything outside their body and outside their mind, to inside their body and inside their mind. In the end, they will have designed the essence of the meaning of design and life itself.</p>
 
       <div class="colophon u-invisible">
-      — Bruce Mau, 2007<br />
-      &nbsp;&nbsp;&nbsp;&nbsp;<small><i>First published in ICON, issue 404, August 2007</i></small>
+        — Bruce Mau, 2007<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;<small><i>First published in ICON, issue 404, August 2007</i></small>
+        <br /><br />
+        <div class="c-dark">&nbsp;&nbsp;&nbsp;&nbsp;designed and built by <a href="http://ldaniel.eu/" target="_blank" class="c-dark"><strong>ldaniel.eu</strong></a>.</div>
       </div>
+
+      <!-- <div class="u-pinned-bottom u-aligncenter c-dark" style="margin-bottom: 20vh;">
+        designed and built by <a href="http://ldaniel.eu/" target="_blank" class="c-dark">ldaniel.eu</a>.
+      </div> -->
 
     </div>
 
